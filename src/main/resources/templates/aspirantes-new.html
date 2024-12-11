@@ -5,12 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/aspirantes/add" method="post" enctype="multipart/form-data" th:object="${aspirante}">
+<form th:action="@{/aspirantes/add}" method="post" enctype="multipart/form-data" th:object="${aspirante}">
   <input type="text" name="nombre" placeholder="Nombre" th:field="*{nombre}">
   <span th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span><br>
   <input type="text" name="apellidos" placeholder="Apellido" th:field="*{apellidos}">
   <span th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></span><br>
-  <input type="file" name="fotoFile"><br><span th:text="${error}"></span><br></br>
+  <input type="file" name="fotoFile"><br><span th:text="${error}"></span><br>
   <input type="submit" value="Insertar"><br>
 </form>
 </body>
