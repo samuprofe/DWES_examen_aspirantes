@@ -6,6 +6,10 @@ import com.dwes.examen.entities.Voto;
 import com.dwes.examen.repositories.AspiranteRepository;
 import com.dwes.examen.repositories.UsuarioRepository;
 import com.dwes.examen.repositories.VotoRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -38,6 +42,8 @@ public class AspirantesController {
     UsuarioRepository usuarioRepository;
 
     private static final List<String> PERMITTED_TYPES = List.of("image/jpeg", "image/png", "image/gif", "image/avif", "image/webp");
+    @Autowired
+    private HttpServletResponse httpServletResponse;
 
     @GetMapping("/aspirantes/add")
     public String newAspirante(Model model) {
@@ -48,7 +54,8 @@ public class AspirantesController {
     @PostMapping("/aspirantes/add")
     public String newAspirantePost(Model model, @Valid Aspirante aspirante,
                                    BindingResult bindingResult,
-                                   @RequestParam("fotoFile") MultipartFile fotoFile) throws IOException {
+                                   @RequestParam("fotoFile") MultipartFile fotoFile,
+                                           HttpSession session) throws IOException {
         boolean error = false;
         if (bindingResult.hasErrors()) {
             error = true;
@@ -69,16 +76,50 @@ public class AspirantesController {
             //Ponemos el nombre del archivo en el objeto
             aspirante.setFoto(fotoFile.getOriginalFilename());
             aspiranteRepository.save(aspirante);
+            session.setAttribute("mensaje","El aspirante se ha añadido correctamente");
             return "redirect:/aspirantes";
         }
     }
 
+    @GetMapping("/aspirantes/prueba")
+    public String aspirantesPrueba(Model model, HttpSession session) {
+
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        model.addAttribute("usuario", usuario);
+
+        return "aspirantes-prueba";
+    }
 
 
     @GetMapping("/aspirantes")
-    public String aspirantes(Model model) {
+    public String aspirantes(Model model, HttpSession session, Principal principal, HttpServletRequest request) {
+
+        Usuario usuario;
+        if(principal != null) {
+            usuario = usuarioRepository.findByEmail(principal.getName()).get();
+            session.setAttribute("usuario", usuario);
+            model.addAttribute("usuario", usuario);
+        }
+
+
+        String mensaje = (String)session.getAttribute("mensaje");
+
         List<Aspirante> aspirantes = aspiranteRepository.findAll();
         model.addAttribute("aspirantes", aspirantes);
+        model.addAttribute("mensaje", mensaje);
+        session.removeAttribute("mensaje");
+
+        //Si existe la cookie acepto-cookies lo mandamos a la vista para que no muestre el mensaje
+        Cookie[] cookies = request.getCookies();
+        Boolean existeCookie=false;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("acepta-cookies".equals(cookie.getName())) {
+                    existeCookie=true;
+                }
+            }
+        }
+        model.addAttribute("existeCookie", existeCookie);
         return "aspirantes-list";
     }
 
@@ -102,6 +143,14 @@ public class AspirantesController {
         else{
             redirectAttributes.addFlashAttribute("error", "No existe el aspirante");
         }
+        return "redirect:/aspirantes";
+    }
+
+    @GetMapping("/aceptar-cookies")
+    public String aceptarCookies(Model model, HttpSession session, HttpServletResponse response) {
+        Cookie cookie = new Cookie("acepta-cookies","true");
+        cookie.setMaxAge(60*60*25*7);
+        response.addCookie(cookie);
         return "redirect:/aspirantes";
     }
 

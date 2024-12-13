@@ -9,6 +9,7 @@
 
 <h2>Listado de aspirantes</h2>
 <span th:text="${error}"></span>
+<span th:text="${mensaje}"></span>
 <table>
     <tr>
         <th>Nombre</th>
@@ -29,6 +30,9 @@
 </table>
 <th:block sec:authorize="isAuthenticated()">
     <a href="/aspirantes/add">Insertar nuevo aspirante</a>
+</th:block>
+<th:block th:if="${existeCookie==false}">
+    <div style="border:1px solid black; padding: 5px; text-align: center; margin:10px;">Esta página utiliza cookies <a href="/aceptar-cookies">ACEPTO</a></div>
 </th:block>
 </body>
 </html>
