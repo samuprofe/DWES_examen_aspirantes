@@ -8,15 +8,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +18,6 @@ public class SecurityConfig {
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,8 +28,12 @@ public class SecurityConfig {
                                 .requestMatchers("/aspirantes/addVoto/*").authenticated()
                                 .anyRequest().permitAll()
                 )
-                .formLogin(withDefaults())  // Usa el formulario de login predeterminado
-                .logout(withDefaults());   // Usa la funcionalidad de logout predeterminada
+                .formLogin(form -> form
+                        .defaultSuccessUrl("/aspirantes", true) // Redirige a /aspirantes tras login exitoso
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/aspirantes") // Redirige a /aspirantes tras logout
+                );
 
         return http.build();
     }

@@ -15,6 +15,7 @@ public class Usuario {
     private String email;
     private String password;
     private String rol;
+    private String foto;
 
 
     @OneToMany(targetEntity = Voto.class, mappedBy = "usuario", cascade = CascadeType.ALL)
@@ -58,5 +59,12 @@ public class Usuario {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 }

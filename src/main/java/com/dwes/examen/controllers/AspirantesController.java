@@ -92,10 +92,10 @@ public class AspirantesController {
 
 
     @GetMapping("/aspirantes")
-    public String aspirantes(Model model, HttpSession session, Principal principal, HttpServletRequest request) {
+    public String aspirantes(Model model, HttpSession session, Principal principal, HttpServletRequest request, Authentication authentication) {
 
         Usuario usuario;
-        if(principal != null) {
+        if(authentication != null && authentication.isAuthenticated()) {
             usuario = usuarioRepository.findByEmail(principal.getName()).get();
             session.setAttribute("usuario", usuario);
             model.addAttribute("usuario", usuario);
