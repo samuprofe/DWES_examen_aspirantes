@@ -1,11 +1,15 @@
 package com.dwes.examen.controllers;
 
 import com.dwes.examen.entities.Aspirante;
+import com.dwes.examen.entities.Usuario;
 import com.dwes.examen.entities.Voto;
 import com.dwes.examen.repositories.AspiranteRepository;
+import com.dwes.examen.repositories.UsuarioRepository;
 import com.dwes.examen.repositories.VotoRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +34,8 @@ public class AspirantesController {
     VotoRepository votoRepository;
     @Autowired
     AspiranteRepository aspiranteRepository;
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
     private static final List<String> PERMITTED_TYPES = List.of("image/jpeg", "image/png", "image/gif", "image/avif", "image/webp");
 
@@ -76,14 +83,21 @@ public class AspirantesController {
     }
 
     @GetMapping("aspirantes/addVoto/{id}")
-    public String addVoto(@PathVariable(name = "id") Long idVoto, RedirectAttributes redirectAttributes) {
+    public String addVoto(@PathVariable(name = "id") Long idVoto, RedirectAttributes redirectAttributes,
+                            Authentication authentication, Principal principal) {
         Voto voto = new Voto();
         Optional<Aspirante> aspiranteOtp = aspiranteRepository.findById(idVoto);
-        if(aspiranteOtp.isPresent())
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(principal.getName());
+        if(aspiranteOtp.isPresent() && usuarioOpt.isPresent())
         {
-            voto.setAspirante(aspiranteOtp.get());
-            voto.setFechaVoto(LocalDateTime.now());
-            votoRepository.save(voto);
+            if(usuarioOpt.get().getVotos().size()<12) {
+                voto.setAspirante(aspiranteOtp.get());
+                voto.setFechaVoto(LocalDateTime.now());
+                voto.setUsuario(usuarioOpt.get());
+                votoRepository.save(voto);
+            }else{
+                redirectAttributes.addFlashAttribute("error", "Ya has votado tramposo");
+            }
         }
         else{
             redirectAttributes.addFlashAttribute("error", "No existe el aspirante");

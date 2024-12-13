@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-
+@Table(name = "votos")
 @Entity
 public class Voto {
 
@@ -13,6 +13,9 @@ public class Voto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime fechaVoto;
+
+    @ManyToOne(targetEntity = Usuario.class)
+    private Usuario usuario;
 
     @ManyToOne(targetEntity = Aspirante.class)
     private Aspirante aspirante;
@@ -31,6 +34,14 @@ public class Voto {
 
     public void setFechaVoto(LocalDateTime fechaVoto) {
         this.fechaVoto = fechaVoto;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Aspirante getAspirante() {

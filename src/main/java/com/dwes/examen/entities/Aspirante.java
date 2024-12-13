@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Table(name="aspirantes")
 @Entity
 public class Aspirante {
     @Id

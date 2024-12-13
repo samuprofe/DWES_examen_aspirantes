@@ -1,8 +1,11 @@
 package com.dwes.examen.config;
 
-
+import com.dwes.examen.services.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -19,14 +22,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/aspirantes/add").authenticated()
-                                .requestMatchers("/aspirantes").permitAll()
-                                .requestMatchers("/aspirantes/addVoto/*").permitAll()
+                                .requestMatchers("/aspirantes/addVoto/*").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .formLogin(withDefaults())  // Usa el formulario de login predeterminado
@@ -41,13 +47,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        // Definir usuarios en memoria
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("user")) // Contraseña codificada
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(customUserDetailsService);
+        return provider;
     }
 }
