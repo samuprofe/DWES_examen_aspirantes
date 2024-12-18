@@ -1,5 +1,6 @@
 package com.dwes.examen.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -22,7 +23,8 @@ public class Aspirante {
     private String apellidos;
     private String foto;
 
-    @OneToMany(targetEntity = Voto.class, mappedBy = "aspirante", cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Voto.class, mappedBy = "aspirante", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Voto> votos = new ArrayList<>();
 
 }
