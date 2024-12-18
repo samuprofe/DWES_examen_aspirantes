@@ -1,9 +1,16 @@
 package com.dwes.examen.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 @Table(name = "usuarios")
 @Entity
@@ -21,50 +28,4 @@ public class Usuario {
     @OneToMany(targetEntity = Voto.class, mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Voto> votos = new ArrayList<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Voto> getVotos() {
-        return votos;
-    }
-
-    public void setVotos(List<Voto> votos) {
-        this.votos = votos;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
-
-    public String getFoto() {
-        return foto;
-    }
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
 }

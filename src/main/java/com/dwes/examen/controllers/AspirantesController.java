@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,7 +26,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,7 +89,7 @@ public class AspirantesController {
     }
 
 
-    @GetMapping("/aspirantes")
+    @GetMapping({"/aspirantes","/"})
     public String aspirantes(Model model, HttpSession session, Principal principal, HttpServletRequest request, Authentication authentication) {
 
         Usuario usuario;
@@ -100,7 +98,6 @@ public class AspirantesController {
             session.setAttribute("usuario", usuario);
             model.addAttribute("usuario", usuario);
         }
-
 
         String mensaje = (String)session.getAttribute("mensaje");
 

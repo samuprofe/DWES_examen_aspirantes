@@ -7,7 +7,9 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Table(name="aspirantes")
 @Entity
 public class Aspirante {
@@ -23,43 +25,4 @@ public class Aspirante {
     @OneToMany(targetEntity = Voto.class, mappedBy = "aspirante", cascade = CascadeType.ALL)
     private List<Voto> votos = new ArrayList<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellidos() {
-        return apellidos;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
-
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
-
-    public List<Voto> getVotos() {
-        return votos;
-    }
-
-    public void setVotos(List<Voto> votos) {
-        this.votos = votos;
-    }
 }
